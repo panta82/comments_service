@@ -12,10 +12,10 @@ class WebServer {
     this._express.use(express.json());
     this._express.use(express.urlencoded({ extended: false }));
 
+    this._express.use((...args) => this._requestLoggerMiddleware(...args));
+
     this._router = express.Router();
     this._express.use("/", this._router);
-
-    this._express.use((...args) => this._requestLoggerMiddleware(...args));
   }
 
   _wrapHandler(handler) {
@@ -39,6 +39,7 @@ class WebServer {
    */
   _requestLoggerMiddleware(req, res, next) {
     this._log(`${req.method} ${req.path}`);
+    next();
   }
 
   /**
@@ -95,9 +96,16 @@ class WebServer {
     // Add final middleware-s
 
     this._express.use((err, req, res, next) => {
-      res.status(err.status || err.code || 500);
+      let status = err.status || err.code;
+      if (!(status >= 400 && status < 600)) {
+        status = 500;
+      }
+      res.status(status);
+
       res.send({
-        message: err.message || err
+        message: err.message || err,
+        status,
+        name: err.name || "Error"
       });
 
       this._log(err);

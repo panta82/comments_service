@@ -27,4 +27,17 @@ Content-Type: application/json
 	"replyToId": "5cc4afacb248f521f0ff5629"
 }
 
+### Update comment
+
+PATCH {{baseUrl}}/api/comments/5cc4afacb248f521f0ff5629
+Accept: */*
+Cache-Control: no-cache
+User-Agent: Test-agent/1234
+Content-Type: application/json
+
+{
+	"text": "Changed text"
+}
+
 ###
+

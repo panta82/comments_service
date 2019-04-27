@@ -40,9 +40,10 @@ class Comment extends Model {
     }
   }
 }
+Comment.OBJECT_IDS = ["replyToId"];
 
-class CommentPayload extends Model {
-  constructor(/** CommentPayload */ source) {
+class CommentCreatePayload extends Model {
+  constructor(/** CommentCreatePayload */ source) {
     super();
 
     this.postId = undefined;
@@ -54,9 +55,20 @@ class CommentPayload extends Model {
   }
 }
 
+class CommentUpdatePayload extends Model {
+  constructor(/** CommentUpdatePayload */ source) {
+    super();
+
+    this.text = undefined;
+
+    this.assign(source);
+  }
+}
+
 module.exports = {
   Comment,
   CommentSource,
 
-  CommentPayload
+  CommentCreatePayload,
+  CommentUpdatePayload
 };
