@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+const { Settings } = require("../src/settings");
+const { App } = require("../src/app");
+
+const settings = Settings.load();
+const app = new App(settings);
+
+app.start().catch(err => {
+  console.error(err.stack);
+  process.exit(1);
+});
