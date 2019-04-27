@@ -1,8 +1,12 @@
 const SERVICES = {
   Logger: require("./logger").Logger,
+  MongoDB: require("./mongodb").MongoDB,
   WebServer: require("./web_server").WebServer,
 
-  controllers: [require("./app_controller")]
+  controllers: [
+    require("./controllers/app_controller"),
+    require("./controllers/comments_controller")
+  ]
 };
 
 class App {
@@ -30,13 +34,16 @@ class App {
     /** @type {WebServer} */
     this.webServer = this._create("WebServer");
 
+    /** @type {MongoDB} */
+    this.mongo = this._create("MongoDB");
+
     for (const controller of SERVICES.controllers) {
       controller(this);
     }
   }
 
   start() {
-    return this.webServer.start();
+    return this.mongo.start().then(() => this.webServer.start());
   }
 }
 

@@ -9,12 +9,19 @@ class Settings {
       debug: "CommentsService:"
     };
 
+    /** @type {WebServerOptions} */
     this.WebServer = /** @lends {WebServerOptions.prototype} */ {
       /**
        * Web server port to listen on
        * @type {number}
        */
       port: 3000
+    };
+
+    /** @type {MongoDBOptions} */
+    this.MongoDB = /** @lends {MongoDBOptions.prototype} */ {
+      url: "mongodb://localhost:27017",
+      db: "comments_service"
     };
 
     assign(this, source);
@@ -31,6 +38,10 @@ class Settings {
       },
       WebServer: {
         port: env.PORT
+      },
+      MongoDB: {
+        url: env.MONGO_URL,
+        db: env.MONGO_DB
       }
     });
   }

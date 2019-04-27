@@ -4,16 +4,16 @@ const express = require("express");
 
 class WebServer {
   constructor(/** WebServerOptions */ options, /** App */ app) {
-    this.options = options;
+    this._options = options;
     this._log = app.logger.for(WebServer);
 
-    this._app = express();
+    this._express = express();
 
-    this._app.use(express.json());
-    this._app.use(express.urlencoded({ extended: false }));
+    this._express.use(express.json());
+    this._express.use(express.urlencoded({ extended: false }));
 
     this._router = express.Router();
-    this._app.use("/", this._router);
+    this._express.use("/", this._router);
   }
 
   _wrapHandler(handler) {
@@ -52,7 +52,7 @@ class WebServer {
   start() {
     // Add final middleware-s
 
-    this._app.use((err, req, res, next) => {
+    this._express.use((err, req, res, next) => {
       res.status(err.status || err.code || 500);
       res.send({
         message: err.message || err
@@ -64,7 +64,7 @@ class WebServer {
     this._log("Starting...");
 
     return new Promise((resolve, reject) => {
-      this._http = http.createServer(this._app);
+      this._http = http.createServer(this._express);
 
       const onListenError = err => {
         if (err.syscall === "listen") {
@@ -72,12 +72,12 @@ class WebServer {
             case "EACCES":
               return reject(
                 new Error(
-                  `Port ${this.options.port} requires elevated privileges`
+                  `Port ${this._options.port} requires elevated privileges`
                 )
               );
             case "EADDRINUSE":
               return reject(
-                new Error(`Port ${this.options.port} is already in use`)
+                new Error(`Port ${this._options.port} is already in use`)
               );
           }
         }
@@ -86,11 +86,11 @@ class WebServer {
       };
 
       this._http.once("error", onListenError);
-      this._http.listen(this.options.port, () => {
+      this._http.listen(this._options.port, () => {
         this._http.removeListener("error", onListenError);
         this._http.on("error", err => this._onError(err));
 
-        this._log(`Listening on http://localhost:${this.options.port}`);
+        this._log(`Listening on http://localhost:${this._options.port}`);
 
         resolve();
       });

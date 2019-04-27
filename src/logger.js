@@ -13,9 +13,6 @@ class Logger {
     if (name.name) {
       name = name.name;
     }
-    debug(this.options.prefix + ":" + name);
-    console.log(debug.enabled(this.options.prefix + ":" + name));
-
     return debug(this.options.prefix + ":" + name);
   }
 }
