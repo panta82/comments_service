@@ -42,6 +42,19 @@ class Comment extends Model {
 }
 Comment.OBJECT_IDS = ["replyToId"];
 
+class CommentWithReplies extends Comment {
+  constructor(/** CommentWithReplies */ source) {
+    super();
+
+    /** @type {CommentWithReplies[]} */
+    this.replies = [];
+
+    this.assign(source);
+  }
+}
+
+// *********************************************************************************************************************
+
 class CommentCreatePayload extends Model {
   constructor(/** CommentCreatePayload */ source) {
     super();
@@ -65,9 +78,12 @@ class CommentUpdatePayload extends Model {
   }
 }
 
+// *********************************************************************************************************************
+
 module.exports = {
   Comment,
   CommentSource,
+  CommentWithReplies,
 
   CommentCreatePayload,
   CommentUpdatePayload

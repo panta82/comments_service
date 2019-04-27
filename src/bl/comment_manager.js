@@ -1,11 +1,54 @@
 const { CustomError } = require("../types/base");
-const { Comment } = require("../types/comments");
+const { Comment, CommentWithReplies } = require("../types/comments");
 
 class CommentManager {
   constructor(/** CommentManagerOptions */ options, /** App */ app) {
     this._options = options;
     this._app = app;
     this._log = app.logger.for(CommentManager);
+  }
+
+  // *******************************************************************************************************************
+
+  async _fetchComment(id) {
+    const res = await this._app.mongo.comments.findOne({
+      _id: this._app.mongo.id(id)
+    });
+    if (!res) {
+      throw new CommentManagerError(`Comment not found: ${id}`, 404);
+    }
+    return res;
+  }
+
+  async _fetchReplies(toId) {
+    return await this._app.mongo.comments
+      .find({
+        replyToId: this._app.mongo.id(toId)
+      })
+      .toArray();
+  }
+
+  /**
+   * @param {CommentWithReplies} comment
+   * @return {Promise<CommentWithReplies>}
+   * @private
+   */
+  async _loadReplies(comment) {
+    const docs = await this._fetchReplies(comment._id);
+    comment.replies = docs.map(doc => new CommentWithReplies(doc));
+    await Promise.all(comment.replies.map(c => this._loadReplies(c)));
+    return comment;
+  }
+
+  /**
+   * @param id
+   * @return {Promise<CommentWithReplies>}
+   */
+  async getCommentWithReplies(id) {
+    const doc = await this._fetchComment(id);
+    const comment = new CommentWithReplies(doc);
+    await this._loadReplies(comment);
+    return comment;
   }
 
   // *******************************************************************************************************************

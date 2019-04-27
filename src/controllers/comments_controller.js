@@ -5,6 +5,10 @@ const {
 } = require("../types/comments");
 
 module.exports = function commentsController(/** App */ app) {
+  app.webServer.get("/api/comments/:id", req => {
+    return app.commentManager.getCommentWithReplies(req.params.id);
+  });
+
   app.webServer.post("/api/comments", req => {
     const payload = new CommentCreatePayload(req.body);
     const source = new CommentSource({

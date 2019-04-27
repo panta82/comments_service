@@ -1,3 +1,11 @@
+### Get nested comment with replies
+
+GET {{baseUrl}}/api/comments/5cc4afacb248f521f0ff5629
+Accept: */*
+Cache-Control: no-cache
+User-Agent: Test-agent/1234
+Content-Type: application/json
+
 ### Create a normal comment
 
 POST {{baseUrl}}/api/comments
