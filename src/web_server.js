@@ -14,6 +14,8 @@ class WebServer {
 
     this._router = express.Router();
     this._express.use("/", this._router);
+
+    this._express.use((...args) => this._requestLoggerMiddleware(...args));
   }
 
   _wrapHandler(handler) {
@@ -29,18 +31,58 @@ class WebServer {
     };
   }
 
+  /**
+   * @param {e.Request} req
+   * @param res
+   * @param next
+   * @private
+   */
+  _requestLoggerMiddleware(req, res, next) {
+    this._log(`${req.method} ${req.path}`);
+  }
+
+  /**
+   * @callback handlerCallback
+   * @param {e.Request} req
+   * @param {e.Response} res
+   */
+
+  /**
+   * @param path
+   * @param {handlerCallback} handler
+   */
   get(path, handler) {
     this._router.get(path, this._wrapHandler(handler));
   }
+
+  /**
+   * @param path
+   * @param {handlerCallback} handler
+   */
   post(path, handler) {
     this._router.post(path, this._wrapHandler(handler));
   }
-  use(path, handler) {
-    this._router.use(path, this._wrapHandler(handler));
+
+  /**
+   * @param path
+   * @param {handlerCallback} handler
+   */
+  put(path, handler) {
+    this._router.put(path, this._wrapHandler(handler));
   }
+
+  /**
+   * @param path
+   * @param {handlerCallback} handler
+   */
   patch(path, handler) {
     this._router.patch(path, this._wrapHandler(handler));
   }
+
+  /**
+   * @param path
+   * @param {handlerCallback} handler
+   */
   delete(path, handler) {
     this._router.delete(path, this._wrapHandler(handler));
   }

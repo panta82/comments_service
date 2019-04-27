@@ -1,9 +1,8 @@
-const MongoClient = require("mongodb").MongoClient;
+const { MongoClient, ObjectID } = require("mongodb");
 
 class MongoDB {
   constructor(/** MongoDBOptions */ options, /** App */ app) {
     this._options = options;
-    this._app = app;
     this._log = app.logger.for(MongoDB);
   }
 
@@ -23,6 +22,10 @@ class MongoDB {
    */
   get comments() {
     return this._db.collection("comments");
+  }
+
+  id(str) {
+    return ObjectID(str);
   }
 
   stop() {

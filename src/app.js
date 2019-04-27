@@ -3,6 +3,10 @@ const SERVICES = {
   MongoDB: require("./mongodb").MongoDB,
   WebServer: require("./web_server").WebServer,
 
+  HashUtil: require("./bl/hash_util").HashUtil,
+  ContentModerator: require("./bl/content_moderator").ContentModerator,
+  CommentManager: require("./bl/comment_manager").CommentManager,
+
   controllers: [
     require("./controllers/app_controller"),
     require("./controllers/comments_controller")
@@ -36,6 +40,15 @@ class App {
 
     /** @type {MongoDB} */
     this.mongo = this._create("MongoDB");
+
+    /** @type {HashUtil} */
+    this.hashUtil = this._create("HashUtil");
+
+    /** @type {ContentModerator} */
+    this.contentModerator = this._create("ContentModerator");
+
+    /** @type {CommentManager} */
+    this.commentManager = this._create("CommentManager");
 
     for (const controller of SERVICES.controllers) {
       controller(this);

@@ -24,6 +24,9 @@ class Settings {
       db: "comments_service"
     };
 
+    /** @type {CommentManagerOptions} */
+    this.commentManager = /** @lends {CommentManagerOptions.prototype} */ {};
+
     assign(this, source);
   }
 
