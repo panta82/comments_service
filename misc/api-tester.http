@@ -1,3 +1,11 @@
+### List nested comments with replies
+
+GET {{baseUrl}}/api/comments/for-post/1234
+Accept: */*
+Cache-Control: no-cache
+User-Agent: Test-agent/1234
+Content-Type: application/json
+
 ### Get nested comment with replies
 
 GET {{baseUrl}}/api/comments/5cc4afacb248f521f0ff5629
@@ -32,7 +40,7 @@ Content-Type: application/json
 	"postId": "1234",
 	"author": "panta",
 	"text": "Some some reply",
-	"replyToId": "5cc4afacb248f521f0ff5629"
+	"replyToId": "5cc59845c4c8a3226c7c732d"
 }
 
 ### Update comment

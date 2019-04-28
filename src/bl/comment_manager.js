@@ -26,28 +26,43 @@ class CommentManager {
   }
 
   /**
-   * @param toId
+   * @param toIds
    * @return {Promise<Comment>}
    * @private
    */
-  async _fetchReplies(toId) {
+  async _fetchReplies(toIds) {
     return await this._app.mongo.comments
       .find({
-        replyToId: this._app.mongo.id(toId)
+        replyToId: {
+          $in: toIds.map(this._app.mongo.id)
+        }
       })
       .toArray();
   }
 
   /**
-   * @param {CommentWithReplies} comment
-   * @return {Promise<CommentWithReplies>}
+   * @param {CommentWithReplies[]} comments
+   * @return {Promise<CommentWithReplies[]>}
    * @private
    */
-  async _loadReplies(comment) {
-    const docs = await this._fetchReplies(comment._id);
-    comment.replies = docs.map(doc => new CommentWithReplies(doc));
-    await Promise.all(comment.replies.map(c => this._loadReplies(c)));
-    return comment;
+  async _loadReplies(comments) {
+    if (!comments.length) {
+      return Promise.resolve(comments);
+    }
+
+    const replies = (await this._fetchReplies(comments.map(c => c._id))).map(
+      doc => new CommentWithReplies(doc)
+    );
+    await this._loadReplies(replies);
+
+    // Assign replies to their comments
+    for (const comment of comments) {
+      comment.replies = replies.filter(
+        r => String(r.replyToId) === String(comment._id)
+      );
+    }
+
+    return comments;
   }
 
   /**
@@ -57,8 +72,29 @@ class CommentManager {
   async getCommentWithReplies(id) {
     const doc = await this._fetchComment(id);
     const comment = new CommentWithReplies(doc);
-    await this._loadReplies(comment);
+    await this._loadReplies([comment]);
     return comment;
+  }
+
+  async _fetchTopLevelCommentsForPost(postId) {
+    return await this._app.mongo.comments
+      .find({
+        postId,
+        replyToId: null
+      })
+      .toArray();
+  }
+
+  /**
+   * @param postId
+   * @return {Promise<CommentWithReplies[]>}
+   */
+  async listCommentsWithRepliesForPost(postId) {
+    const comments = (await this._fetchTopLevelCommentsForPost(postId)).map(
+      res => new CommentWithReplies(res)
+    );
+    await this._loadReplies(comments);
+    return comments;
   }
 
   // *******************************************************************************************************************
