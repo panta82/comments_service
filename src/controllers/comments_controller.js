@@ -23,4 +23,8 @@ module.exports = function commentsController(/** App */ app) {
     const payload = new CommentUpdatePayload(req.body);
     return app.commentManager.update(req.params.id, payload);
   });
+
+  app.webServer.delete("/api/comments/:id", req => {
+    return app.commentManager.delete(req.params.id);
+  });
 };

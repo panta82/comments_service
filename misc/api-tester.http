@@ -47,5 +47,12 @@ Content-Type: application/json
 	"text": "Changed text"
 }
 
-###
+### Delete comment (deep)
 
+DELETE {{baseUrl}}/api/comments/5cc586dc86a1f5029cace268
+Accept: */*
+Cache-Control: no-cache
+User-Agent: Test-agent/1234
+Content-Type: application/json
+
+###
